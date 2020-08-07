@@ -8,13 +8,20 @@ class MicropostsController extends Controller
 {
     public function index()
     {
+        //dd(\Auth::check());
+        
         $data = [];
         if (\Auth::check()) {
             // 認証済みユーザ（閲覧者）を取得
             $user = \Auth::user();
+            
+            // 関係するモデルの件数をロード
+            $user->loadRelationshipCounts();
+            
+            
             // ユーザとフォロー中ユーザの投稿の一覧を作成日時の降順で取得
             $microposts = $user->feed_microposts()->orderBy('created_at', 'desc')->paginate(10);
-
+            //dd($microposts);
             $data = [
                 'user' => $user,
                 'microposts' => $microposts,
@@ -27,6 +34,7 @@ class MicropostsController extends Controller
     
     public function store(Request $request)
     {
+        //dd($request);
         // バリデーション
         $request->validate([
             'content' => 'required|max:255',

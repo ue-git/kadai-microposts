@@ -13,6 +13,17 @@
                         <p>{!! link_to_route('users.show', 'View profile', ['user' => $user->id]) !!}</p>
                     </div>
                 </div>
+
+                <div class="form-inline">
+                    <div class="ml-2">
+                        @if (Auth::id() == $user->user_id)
+                            {{-- 投稿削除ボタンのフォーム --}}
+                            {!! Form::open(['route' => ['microposts.destroy', $micropost->id], 'method' => 'delete']) !!}
+                                {!! Form::submit('Delete', ['class' => 'btn btn-danger btn-sm']) !!}
+                            {!! Form::close() !!}
+                        @endif                            
+                    </div>            
+                </div>
             </li>
         @endforeach
     </ul>

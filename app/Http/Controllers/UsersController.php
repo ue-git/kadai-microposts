@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 
 use App\User; // 追加
+use DB;
 
 class UsersController extends Controller
 {
@@ -29,7 +30,7 @@ class UsersController extends Controller
 
         // ユーザの投稿一覧を作成日時の降順で取得
         $microposts = $user->microposts()->orderBy('created_at', 'desc')->paginate(10);
-
+        
         // ユーザ詳細ビューでそれらを表示
         return view('users.show', [
             'user' => $user,
@@ -37,7 +38,7 @@ class UsersController extends Controller
         ]);
     }
     
-        /**
+    /**
      * ユーザのフォロー一覧ページを表示するアクション。
      *
      * @param  $id  ユーザのid
@@ -82,6 +83,28 @@ class UsersController extends Controller
         return view('users.followers', [
             'user' => $user,
             'users' => $followers,
+        ]);
+    }
+    
+    
+    //お気に入り
+    public function favorites($id)
+    {
+        // idの値でユーザを検索して取得
+        //$user = User::findOrFail($id);
+        $user = \Auth::user();
+
+        // 関係するモデルの件数をロード
+        $user->loadRelationshipCounts();
+
+        $favorite_array = DB::table('favorites')->where('user_id',$id)->pluck('maicropost_id')->toArray();
+
+        $favorites = $user->feed_favorite()->whereIn('id',$favorite_array)->whereNotIn('user_id',[$id])->orderBy('created_at', 'desc')->paginate(10);
+
+        // フォロワー一覧ビューでそれらを表示
+        return view('users.favorites', [
+            'user' => $user,
+            'microposts' => $favorites,
         ]);
     }
 }
