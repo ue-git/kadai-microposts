@@ -146,7 +146,7 @@ class User extends Authenticatable
         // このユーザがフォロー中のユーザのidを取得して配列にする
         $userIds = $this->followings()->pluck('users.id')->toArray();
         // このユーザのidもその配列に追加
-        
+        //dd($userIds);
         $userIds[] = $this->id;
         //dd($userIds);
         // それらのユーザが所有する投稿に絞り込む
@@ -241,11 +241,19 @@ class User extends Authenticatable
     public function favorites()
     {
         //dd($this->belongsToMany(User::class, 'favorites', 'user_id','maicropost_id'));
-        //dd($this->belongsToMany('App\Micropost','favorites')->where('user_id',1));
-        $c = $this->belongsToMany(User::class, 'favorites', 'user_id')->withTimestamps();
+        ///dd($this->belongsToMany('App\Micropost','favorites')->where('user_id',1));
+        //$c = $this->belongsToMany(User::class, 'favorites', 'user_id')->withTimestamps();
         //dd($c);
-        return $this->belongsToMany(User::class, 'favorites', 'user_id')->withTimestamps();
+        
+        //return $this->belongsToMany(User::class, 'favorites')->withTimestamps();
+        
+        //return $this->hasMany(Micropost::class);
+        //return $this->belongsToMany(User::class, 'microposts')->withTimestamps();
+        //return $this->belongsToMany(User::class, 'favorites', 'user_id')->withTimestamps();
+    
         //return $this->belongsToMany(User::class, 'favorites', 'maicropost_id' ,'user_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorites', 'user_id')->withTimestamps();
+        //return $this->hasMany(User::class, 'favorites', 'maicropost_id' ,'user_id')->withTimestamps();
         //return $this->hasMany(Micropost::class,'favorite_users');
     }
 
@@ -263,14 +271,14 @@ class User extends Authenticatable
     {
         
         // このユーザがフォロー中のユーザのidを取得して配列にする
-        $userIds = $this->favorites()->pluck('users.id')->toArray();
-        
+        //$userIds = $this->followings()->pluck('users.id')->toArray();
+        $micropostIds = $this->favorites()->pluck('maicropost_id')->toArray();
         // このユーザのidもその配列に追加
-        $userIds[] = $this->id;
-        
+        //*dd($userIds);
+        $micropostIds[] = $this->id;
+        //dd($userIds);
         // それらのユーザが所有する投稿に絞り込む
-        return Micropost::whereIn('user_id', $userIds);
-        
+        return Micropost::whereIn('id', $micropostIds);
         
     }
 }

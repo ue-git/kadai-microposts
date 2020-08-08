@@ -91,8 +91,8 @@ class UsersController extends Controller
     public function favorites($id)
     {
         // idの値でユーザを検索して取得
-        //$user = User::findOrFail($id);
-        $user = \Auth::user();
+        $user = User::findOrFail($id);
+        //$user = \Auth::user();
 
         // 関係するモデルの件数をロード
         $user->loadRelationshipCounts();
@@ -102,7 +102,14 @@ class UsersController extends Controller
         //ログインユーザも含めるみたい
 
         //$favorites = $user->feed_microposts()->whereIn('id',$favorite_array)->whereNotIn('user_id',[$id])->orderBy('created_at', 'desc')->paginate(10);
-        $favorites = $user->feed_microposts()->whereIn('id',$favorite_array)->orderBy('created_at', 'desc')->paginate(10);
+        //$favorites = $user->feed_microposts()->whereIn('id',$favorite_array)->orderBy('created_at', 'desc')->paginate(10);
+        $favorites = $user->feed_favorite()->paginate(10);
+        //$favorites = $user->feed_favorite()->whereIn('id',$favorite_array)->orderBy('created_at', 'desc')->paginate(10);
+        
+        //$favorites1 = DB::table('microposts')->whereIn('id',$favorite_array)->orderBy('created_at', 'desc')->paginate(10);
+        //$favorites = $user->feed_favorite()->whereIn('id',$favorite_array)->orderBy('created_at', 'desc')->paginate(10);
+        //$favorites = $user->feed_favorite()->orderBy('created_at', 'desc')->paginate(10);
+        //$favorites = $user->favorites()->orderBy('created_at', 'desc')->paginate(10);
         //dd($favorites);
 
         // フォロワー一覧ビューでそれらを表示
