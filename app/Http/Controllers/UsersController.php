@@ -98,8 +98,12 @@ class UsersController extends Controller
         $user->loadRelationshipCounts();
 
         $favorite_array = DB::table('favorites')->where('user_id',$id)->pluck('maicropost_id')->toArray();
+        //dd($favorite_array);
+        //ログインユーザも含めるみたい
 
-        $favorites = $user->feed_favorite()->whereIn('id',$favorite_array)->whereNotIn('user_id',[$id])->orderBy('created_at', 'desc')->paginate(10);
+        //$favorites = $user->feed_microposts()->whereIn('id',$favorite_array)->whereNotIn('user_id',[$id])->orderBy('created_at', 'desc')->paginate(10);
+        $favorites = $user->feed_microposts()->whereIn('id',$favorite_array)->orderBy('created_at', 'desc')->paginate(10);
+        //dd($favorites);
 
         // フォロワー一覧ビューでそれらを表示
         return view('users.favorites', [

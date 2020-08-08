@@ -173,18 +173,21 @@ class User extends Authenticatable
     {
         // すでにフォローしているかの確認
         $exist = $this->is_favoriteing($micropostId);
+        
         //dd($exist);
         
         // 相手が自分自身かどうかの確認
         $its_me = $this->id == $micropostId;
+        //dd($micropostId);
         //dd($its_me);
         if ($exist || $its_me) {
             // すでにフォローしていれば何もしない
-            //dd('test');
             return false;
         } else {
             // 未フォローであればフォローする
-            $this->favorites()->attach($micropostId);
+            //dd($micropostId);  
+            $this->is_favorites()->attach($micropostId);
+           
             return true;
         }
     }
@@ -204,7 +207,7 @@ class User extends Authenticatable
 
         if ($exist && !$its_me) {
             // すでにフォローしていればフォローを外す
-            $this->favorites()->detach($micropostId);
+            $this->is_favorites()->detach($micropostId);
             return true;
         } else {
             // 未フォローであれば何もしない
@@ -237,12 +240,19 @@ class User extends Authenticatable
      */
     public function favorites()
     {
-        return $this->belongsToMany(User::class, 'favorites', 'user_id','maicropost_id')->withTimestamps();
+        //dd($this->belongsToMany(User::class, 'favorites', 'user_id','maicropost_id'));
+        //dd($this->belongsToMany('App\Micropost','favorites')->where('user_id',1));
+        $c = $this->belongsToMany(User::class, 'favorites', 'user_id')->withTimestamps();
+        //dd($c);
+        return $this->belongsToMany(User::class, 'favorites', 'user_id')->withTimestamps();
+        //return $this->belongsToMany(User::class, 'favorites', 'maicropost_id' ,'user_id')->withTimestamps();
+        //return $this->hasMany(Micropost::class,'favorite_users');
     }
 
-    public function favorites1()
+    public function is_favorites()
     {
-        return $this->belongsToMany(Micropost::class, 'favorites', 'user_id' ,'maicropost_id')->withTimestamps();
+        //return $this->belongsToMany(Micropost::class, 'favorites', 'user_id' ,'maicropost_id')->withTimestamps();
+        return $this->belongsToMany(User::class, 'favorites', 'user_id','maicropost_id')->withTimestamps();
     }
 
     
@@ -257,7 +267,7 @@ class User extends Authenticatable
         
         // このユーザのidもその配列に追加
         $userIds[] = $this->id;
-        //dd($userIds);
+        
         // それらのユーザが所有する投稿に絞り込む
         return Micropost::whereIn('user_id', $userIds);
         
